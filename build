@@ -1,7 +1,5 @@
 echo "Build the doc"
-rdoc --main camping-abingo.rb --force-update
+rdoc lib/camping-abingo.rb --force-update --ri-site
 rdoc examples/camping-abingo-test/camping-abingo-test.rb
 
-echo "Build the RI doc"
-rdoc --ri-site
 

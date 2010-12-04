@@ -15,7 +15,7 @@ Copyright:: Copyright (c) 2009 Patrick McKenzie - A subset of the Rails ABingo p
 License::   Distributes under the same terms as Ruby
 Version:: 1.0.3
 
-:main: Camping-ABingo
+:main: ABingoCampingPlugin
 
 =Installing Camping-ABingo
 A lightweight ABingo plugin for Ruby Camping. 
