@@ -1,51 +1,39 @@
+#	NOTE: This sample is a basic skeletonfor the CampingABingoTest web app
+#  which does NOT yet contain any integration with ABingo.
+#
+#	You can use this as a starting point to follow along the instructions to add
+# 	ABingo support based on the blog post series: http://blog.monnet-usa.com/?p=322
+#
 gem 'camping' , '>= 2.0'	
 gem 'filtering_camping' , '>= 1.0'	
-gem 'camping-abingo'
 
 %w(rubygems active_record erb  fileutils json markaby md5 redcloth  
-camping camping/session filtering_camping camping-abingo
+camping camping/session filtering_camping 
 ).each { |lib| require lib }
 
 Camping.goes :CampingABingoTest
 
-module ActiveSupport::Cache
-    class MemoryStore < Store
-		def data
-			@data
-		end	
-	end
-end # ActiveSupport::Cache
-	
 module CampingABingoTest
 	include Camping::Session
 	include CampingFilters
 
-	extend  ABingoCampingPlugin
-	include ABingoCampingPlugin::Filters
-	
 	app_logger = Logger.new(File.dirname(__FILE__) + '/camping-abingo-test.log')
 	app_logger.level = Logger::DEBUG
 	Camping::Models::Base.logger = app_logger
-	ABingoCampingPlugin.logger   = app_logger
 	
 	def CampingABingoTest.create
 		dbconfig = YAML.load(File.read('config/database.yml'))								
 		Camping::Models::Base.establish_connection  dbconfig['development']	
 		
-		ABingoCampingPlugin.create
-		Abingo.cache.logger = Camping::Models::Base.logger
-		Abingo.options[:abingo_administrator_user_id] = 1
 		CampingABingoTest::Models.create_schema :assume => (CampingABingoTest::Models::User.table_exists? ? 1.1 : 0.0)
 	end
 end
 
 module CampingABingoTest::Models
-	include ABingoCampingPlugin::Models
-
 	class User < Base;
 	end
 
-	class CreateUserSchema < V 1.1
+	class CreateUserSchema < V 1.0
 		def self.up
 			create_table :CampingABingoTest_users, :force => true do |t|
 				t.integer 	:id, :null => false
@@ -54,12 +42,9 @@ module CampingABingoTest::Models
 			end
 			
 			User.create :username => 'admin', :password => 'camping'
-			
-			ABingoCampingPlugin::Models.up
 		end
 		
 		def self.down		
-			ABingoCampingPlugin::Models.down
 			drop_table :CampingABingoTest_users
 		end
 	end
@@ -67,13 +52,9 @@ module CampingABingoTest::Models
 end
 
 module CampingABingoTest::Helpers
-	extend ABingoCampingPlugin::Helpers
-	include ABingoCampingPlugin::Helpers
 end
 
 module CampingABingoTest::Controllers
-	extend ABingoCampingPlugin::Controllers
-
 	class Index
 		def get 
 			render :index
@@ -115,7 +96,6 @@ module CampingABingoTest::Controllers
 	class SignOut < R '/signout'		
 		def get
 			@state.user_id = nil
-			@state.abingo_identity = Abingo.identity = rand(10 ** 10).to_i
 			
 			render :index
 		end
@@ -123,11 +103,6 @@ module CampingABingoTest::Controllers
 	
 	class SignUp < R '/signup'
 		def get
-			if @input.special_promo
-				bingo! "special_promo"
-			end
-			bingo! "call_to_action"
-			
 			render :signup
 		end
 		
@@ -141,7 +116,6 @@ module CampingABingoTest::Controllers
 				@user.save
 				if @user
 					@state.user_id = @user.id
-					@state.abingo_identity = @user.id
 					redirect R(Welcome)
 				else
 					@info = @user.errors.full_messages unless @user.errors.empty?
@@ -157,12 +131,9 @@ module CampingABingoTest::Controllers
 		end
 	end
 	
-	include_abingo_controllers
 end #Controllers
 
 module CampingABingoTest::Views
-	extend ABingoCampingPlugin::Views
-
 	def layout
 		html do
 		
@@ -386,10 +357,6 @@ STYLE
 						a "XYZ", :href=>"/welcome"
 						span " | "
 						a "Sign-Out",	:href=>'/signout'
-						if @state.user_id == abingo_administrator_user_id
-							span " | "
-							a "ABingo Dashboard", :href=>"/abingo/dashboard"
-						end
 					end
 				end
 			end
@@ -401,13 +368,6 @@ STYLE
 					h4 "Debugging Information:"
 					h5 "State:"
 					div "#{@state.inspect}"
-					
-					h5 "Cache Data:"
-					if Abingo.cache && Abingo.cache.data
-						Abingo.cache.data.each do | k,v |
-							div.abingo_debug "#{k} => #{v.inspect}";
-						end
-					end
 				end
 				
 				div.footer_notices! { "Copyright &copy; 2010 &nbsp; -  #{ a('Patrick McKenzie', :href => 'http://www.bingocardcreator.com/abingo') } and #{ a('Philippe Monnet', :href => 'http://blog.monnet-usa.com/') }  " }
@@ -430,15 +390,6 @@ STYLE
 		div.xyz do
 			h1 'XYZ SAAS Application'
 			
-			if ab_test("special_promo")
-				div.special_promo! do
-					div "Special offer for today only"
-					a "Sign-Up Now and get a month free!", :href=>"/signup?special_promo=1"
-				end
-			else
-				div.abingo_explain "The special promo was not selected for this user"
-			end		
-			
 			div.marketing! do
 				div.benefits! do
 					ul do
@@ -449,11 +400,7 @@ STYLE
 				end
 				
 				div.actnow! do
-					signup_text = ab_test("call_to_action", 
-														[ 	"Sign-Up Now!",
-															"Try It For Free Now!",
-															"Start Your Free Trial Now!",
-														])
+					signup_text = "Sign-Up Now!"
 					
 					a :href=>"/signup" do
 						div.signup_btn!  signup_text
@@ -503,7 +450,6 @@ STYLE
 		end
 	end
 	
-	include_abingo_views
 end
 
 CampingABingoTest.create

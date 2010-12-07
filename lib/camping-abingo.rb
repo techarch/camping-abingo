@@ -1,14 +1,5 @@
 =begin rdoc
 
-[Abingo|identity|flip();test();bingo!(){bg:red}]
-[Experiment|test_name;status|start_experiment!();end_experiment!(){bg:green}]
-[Alternative|content;lookup;weight;participants;conversions|score_conversion();score_participation(){bg:yellow}]
-[User|id;username{bg:blue}]
-[Abingo]uses -.->[Experiment]
-[Abingo]-id>[User]
-[Experiment]++1-alternatives >*[Alternative]
-
-
 Author::	Philippe F. Monnet (mailto:pfmonnet@gmail.com)
 Copyright:: Copyright (c) 2010 Philippe F. Monnet - ABingo Camping plugin
 Copyright:: Copyright (c) 2009 Patrick McKenzie - A subset of the Rails ABingo plugin reused in  ABingo Camping

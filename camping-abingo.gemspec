@@ -2,7 +2,7 @@ require 'rubygems'
 
 SPEC = Gem::Specification.new do |s| 
   s.name = "camping-abingo" 
-  s.version = "1.0.4" 
+  s.version = "1.0.5" 
   
   s.authors = [ "Patrick McKenzie", "Philippe F. Monnet" ]
   s.email = ["patrick@kalzumeus.com", "techarch@monnet-usa.com"]
@@ -15,10 +15,10 @@ This is an ABingo plugin for the Ruby Camping framework, inspired by Patrick McK
   EOF
   s.rubyforge_project = "camping-abingo"
   
-  s.add_dependency('activesupport', '>= 2.2')
-  s.add_dependency('activerecord', '>= 2.2')
-  s.add_dependency('rack', '>= 1.1')
-  s.add_dependency('markaby', '>= 0.5')
+  s.add_dependency('activesupport')
+  s.add_dependency('activerecord')
+  s.add_dependency('rack')
+  s.add_dependency('markaby')
   s.add_dependency('camping', '>= 2.0')
   s.add_dependency('filtering_camping', '>= 1.0')
   
