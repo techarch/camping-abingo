@@ -2,11 +2,11 @@ require 'rubygems'
 
 SPEC = Gem::Specification.new do |s| 
   s.name = "camping-abingo" 
-  s.version = "1.0.5" 
+  s.version = "1.0.6" 
   
   s.authors = [ "Patrick McKenzie", "Philippe F. Monnet" ]
   s.email = ["patrick@kalzumeus.com", "techarch@monnet-usa.com"]
-  s.date = %q{2010-12-04}
+  s.date = %q{2010-12-07}
   s.homepage = "https://github.com/techarch/camping-abingo" 
   s.platform = Gem::Platform::RUBY 
   s.summary = "A plugin to add A/B testing capabilities using the ABingo framework to a Camping application" 

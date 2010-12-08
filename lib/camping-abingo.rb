@@ -63,16 +63,7 @@ Ok, at this point we have a minimally configured application module. Our next st
 
 ===Plugging in the ABingo models
 
-First, we'll include the include ABingoCampingPlugin::Models module so we can get all the ABingo-specific models. Then we'll define a User model. The User will need to keep track of the applications it provided access to. It will also manage the tokens associated with these applications. Our model will look like this:
-
-	class User < Base;
-		has_many :client_applications
-		has_many :tokens, 
-			:class_name=>"OauthToken",
-			:order=>"authorized_at desc",
-			:include=>[:client_application]
-
-	end
+First, we'll include the include ABingoCampingPlugin::Models module so we can get all the ABingo-specific models. 
 
 Now we need a CreateUserSchema migration class to define our database tables for User, and ABingo models. In the up and down methods we will plugin a call to the corresponding method from the ABingoCampingPlugin::Models module to create the tables for the Experiment and Alternative models.
 
@@ -706,14 +697,14 @@ module ABingoCampingPlugin::Helpers
 	
 end #ABingoCampingPlugin::Helpers
 
-# Filters module for OAuth Camping Plugin.
+# Filters module for ABingo Camping Plugin.
 # The module will be plugged in to the main app Helpers module. 
 # Example:
 #	module CampingOAuthProvider
 #		include Camping::Session
 #		include CampingFilters
-#		extend  OAuthCampingPlugin
-#		include OAuthCampingPlugin::Filters
+#		extend  ABingoCampingPlugin
+#		include ABingoCampingPlugin::Filters
 #		
 #		# ...
 #	end
@@ -755,11 +746,6 @@ end
 #	module CampingABingoTest::Models
 #		include ABingoCampingPlugin::Models
 #
-#		class User < Base;
-#			has_many :client_applications
-#			has_many :tokens, :class_name=>"OauthToken",:order=>"authorized_at desc",:include=>[:client_application]
-#		
-#		end
 #		# ...
 #	end
 #
@@ -1155,7 +1141,7 @@ module ABingoCampingPlugin::Views
 						}
 						
 					experiment.alternatives.each do | alternative |  
-						tr.abingo_alternative_row { 	td { h(alternative.content) };
+						tr.abingo_alternative_row { 	td { ERB::Util.h(alternative.content) };
 								td { alternative.participants.to_s };
 								td { alternative.conversions.to_s + '(' + alternative.pretty_conversion_rate + ')' };
 								td { 

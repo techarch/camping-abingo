@@ -1,8 +1,8 @@
-gem 'camping' , '>= 2.0'	
-gem 'filtering_camping' , '>= 1.0'	
+gem 'camping' , '~> 2.0'	
+gem 'filtering_camping' , '~> 1.0'	
 gem 'camping-abingo'
 
-%w(rubygems active_record erb  fileutils json markaby md5 redcloth  
+%w(rubygems active_record active_support erb  fileutils json markaby md5   
 camping camping/session filtering_camping camping-abingo
 ).each { |lib| require lib }
 
@@ -23,14 +23,22 @@ module CampingABingoTest
 	extend  ABingoCampingPlugin
 	include ABingoCampingPlugin::Filters
 	
-	app_logger = Logger.new(File.dirname(__FILE__) + '/camping-abingo-test.log')
-	app_logger.level = Logger::DEBUG
+	is_under_camping_server = (Camping.const_defined? :Server) 	
+	if is_under_camping_server 
+		app_logger = Logger.new(File.dirname(__FILE__) + '/camping-abingo-test.log')
+		app_logger.level = Logger::DEBUG
+	else
+		app_logger = Logger.new($STDERR)
+		app_logger.level = Logger::ERROR
+	end
+
 	Camping::Models::Base.logger = app_logger
 	ABingoCampingPlugin.logger   = app_logger
 	
 	def CampingABingoTest.create
 		dbconfig = YAML.load(File.read('config/database.yml'))								
-		Camping::Models::Base.establish_connection  dbconfig['development']	
+		environment = ENV['DATABASE_URL'] ? 'production' : 'development'
+		Camping::Models::Base.establish_connection  dbconfig[environment]
 		
 		ABingoCampingPlugin.create
 		Abingo.cache.logger = Camping::Models::Base.logger
@@ -47,7 +55,7 @@ module CampingABingoTest::Models
 
 	class CreateUserSchema < V 1.1
 		def self.up
-			create_table :CampingABingoTest_users, :force => true do |t|
+			create_table :campingabingotest_users, :force => true do |t|
 				t.integer 	:id, :null => false
 				t.string		:username
 				t.string		:password
@@ -60,7 +68,7 @@ module CampingABingoTest::Models
 		
 		def self.down		
 			ABingoCampingPlugin::Models.down
-			drop_table :CampingABingoTest_users
+			drop_table :campingabingotest_users
 		end
 	end
 
