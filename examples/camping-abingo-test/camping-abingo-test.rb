@@ -104,6 +104,7 @@ module CampingABingoTest::Controllers
 
 			if @user
 				@state.user_id = @user.id
+				@state.abingo_identity = @user.id
 
 				if @state.return_to.nil?
 					redirect R(Welcome)
