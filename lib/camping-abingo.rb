@@ -1031,8 +1031,9 @@ module ABingoCampingPlugin::Controllers
 	def include_abingo_controllers
 		module_eval ABingoCampingPlugin::Controllers.common_abingo_controllers
 
-		# Add ABing to each controller
-		r.each do |x| 
+		# Add ABingo to each controller by traversing @r, the list of controllers
+		# and including the needed ABingo modules
+		@r.each do |x| 
 			x.class_eval do
 				include ABingoCampingPlugin::ABingo
 				include ABingoCampingPlugin::Helpers
